@@ -55,8 +55,6 @@ augmentors = [hflip,vflip,hshift,vshift,rotation,shear,hvflip,bright,bright_rot]
 #iterate through augmentors and generate augmented image sets
 mild_augmented_train = []
 mod_augmented_train = []
-# mild_augmented_val = []
-# mod_augmented_val = []
 
 for augmentor in augmentors[:2]:
 
