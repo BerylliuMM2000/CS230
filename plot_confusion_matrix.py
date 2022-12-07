@@ -6,7 +6,7 @@ import numpy as np
 import itertools
 
 # Adapted from https://www.kaggle.com/code/kenconstable/alzheimer-s-multi-class-classification/notebook
-def plot_training_metrics(train_hist,model,test_gen,test_label,y_actual,y_pred,classes):
+def plot_training_metrics(train_hist,model,test_gen,test_label,y_actual,y_pred,classes,save_path):
     """
     Input: trained model history, model, test image generator, actual and predicted labels, class list
     Output: Plots loss vs epochs, accuracy vs epochs, confusion matrix
@@ -84,4 +84,4 @@ def plot_training_metrics(train_hist,model,test_gen,test_label,y_actual,y_pred,c
     plt.xlabel('Predicted label')
     plt.tight_layout()
     plt.show()
-    plt.savefig("resnet_1206_tune_adam.png")
+    plt.savefig(save_path)
