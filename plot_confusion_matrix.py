@@ -59,11 +59,9 @@ def plot_training_metrics(train_hist,model,test_gen,test_label,y_actual,y_pred,c
     plt.ylabel('AUC')
     plt.axhline(y=max_auc,color='darkslategray', linestyle='--')
     plt.legend()
-
     
     # calculate Confusion Matrix
     cm = confusion_matrix(y_actual, y_pred)
-
     # create confusion matrix plot
     plt.subplot(1,3,3)
     plt.imshow(cm, interpolation='nearest', cmap=plt.cm.BuPu)
@@ -72,14 +70,40 @@ def plot_training_metrics(train_hist,model,test_gen,test_label,y_actual,y_pred,c
     tick_marks = np.arange(len(classes))
     plt.xticks(tick_marks, classes, rotation=45)
     plt.yticks(tick_marks, classes)
-
     # loop through matrix, plot each 
     threshold = cm.max() / 2.
     for r, c in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
         plt.text(c, r, format(cm[r, c], 'd'),
                  horizontalalignment="center",
                  color="white" if cm[r, c] > threshold else "black")
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+    plt.tight_layout()
+    plt.show()
+    plt.savefig(save_path)
 
+def plot_confusion_matrix(model,test_gen,test_label,y_actual,y_pred,classes,save_path):
+    ''' Plot only the confusion matrix: this is for evaluation on validation
+    or test set.
+    '''
+    test_loss, test_metric, *anythingelse = model.evaluate(test_gen,test_label,verbose = False)
+    results       = round(test_metric,2)*100
+    f1 = round(f1_score(y_actual, y_pred, average="weighted"),2)*100
+    # calculate Confusion Matrix
+    cm = confusion_matrix(y_actual, y_pred)
+    # create confusion matrix plot
+    plt.imshow(cm, interpolation='nearest', cmap=plt.cm.BuPu)
+    plt.title("Confusion Matrix \n F1 score:{}% \n AUC: {}%".format(f1, results))
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation=45)
+    plt.yticks(tick_marks, classes)
+    # loop through matrix, plot each 
+    threshold = cm.max() / 2.
+    for r, c in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(c, r, format(cm[r, c], 'd'),
+                 horizontalalignment="center",
+                 color="white" if cm[r, c] > threshold else "black")
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
     plt.tight_layout()
