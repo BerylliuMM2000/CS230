@@ -4,7 +4,7 @@ from tensorflow.keras.layers import Input, Concatenate, Dense, Dropout, Flatten,
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, AveragePooling2D
 from tensorflow.keras.layers import BatchNormalization
 from tensorflow.keras.callbacks import EarlyStopping,ReduceLROnPlateau
-import kerastuner as kt
+import keras_tuner as kt
 from keras.optimizers import SGD, Adam
 
 BATCH_SIZE = 16
@@ -12,6 +12,13 @@ IMAGE_SIZE = [176, 208]
 EPOCHS = 100
 NUM_CLASSES = 4
 METRICS = [tf.keras.metrics.AUC(name='auc'), "acc"]
+
+""" Two types of models are present here. The functions starting with 'tune', also with
+    'hp' as the only argument return models only for hyperparameter tuning. Other functions 
+    return normal models. The default argument values come from hyperparameter tuning. One 
+    should not change these values when initiating and fitting models unless a better tuner
+    yield better results.
+"""
 
 def tune_resnet50_adam(hp):
     """ Build a Resnet-50 model for hyperparameter tuning
@@ -88,3 +95,28 @@ def tune_resnet50_sgd(hp):
     sgd = SGD(learning_rate=hp_learning_rate, decay=1e-6, momentum=hp_momentum, nesterov=True)
     model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=METRICS)
     return model
+
+def build_resnet50_sgd(unit1=1280, unit2=256, lr=2.7e-3, momentum=0.95):
+    """ Build a modified ResNet-50 model using the best hyperparameters.
+
+    This model is a modification of the original Resnet-50 model structure.
+    It inherits all the convolution layers, but the dense and softmax layers
+    are rebuild. 2 FC layers are used.
+    """
+    model = Sequential()
+    model.add(tf.keras.applications.ResNet50(
+        input_shape=(*IMAGE_SIZE, 3), 
+        weights='imagenet', 
+        include_top=False))
+    model.add(AveragePooling2D())
+    model.add(Flatten())
+    model.add(Dense(unit1))
+    model.add(Dense(unit2))
+    model.add(Dense(4, activation='softmax'))
+    sgd = SGD(learning_rate=lr, decay=1e-6, momentum=momentum, nesterov=True)
+    model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=METRICS)
+    return model
+
+# TODO: build_resnet50_adam after tuning
+
+# TODO: baseline model of inception and vgg16

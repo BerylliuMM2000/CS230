@@ -2,6 +2,16 @@ import numpy as np
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import tensorflow as tf
 
+""" Adapted from https://github.com/Jacobheyman702/Alzheimer_Image_classifier-/blob/master/Image_analysis.ipynb
+
+    Application of keras ImageDataGenerator() to perform image augmentation on the training set only
+    of the two minor classes: moderate demented and mild demented.
+
+    train_images_aug, valid_images, and test_images are generator objects that will
+    be used in almost all other python files. train_labels, etc. are the labels in 
+    one-hot representation. These are useful when plotting the confusion matrix.
+"""
+
 IMAGE_SIZE = [176,208]
 BATCH_SIZE = 32
 CLASS_LIST  = ['MildDemented','ModerateDemented','NonDemented','VeryMildDemented']

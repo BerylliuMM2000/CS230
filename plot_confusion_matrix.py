@@ -5,11 +5,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 import itertools
 
-# Adapted from https://www.kaggle.com/code/kenconstable/alzheimer-s-multi-class-classification/notebook
+# Inspired from https://www.kaggle.com/code/kenconstable/alzheimer-s-multi-class-classification/notebook
 def plot_training_metrics(train_hist,model,test_gen,test_label,y_actual,y_pred,classes,save_path):
     """
-    Input: trained model history, model, test image generator, actual and predicted labels, class list
-    Output: Plots loss vs epochs, accuracy vs epochs, confusion matrix
+    Input: trained model history, model, test image generator, actual and predicted labels, 
+    class list (to be shown on axes), and path to save the plot
+    Output: Plots loss vs epochs, accuracy vs epochs, confusion matrix, written to save_path
+
+    Notice that the difference between test_label and y_actual is that label is the one-hot
+    representation (eg. [0,1,0,0]), where y_actual is a number {0,1,2,3} outputed by the softmax 
+    layer. In general, y_actual = np.argmax(test_labels, axis=-1)
     """
     
     # Evaluate the results:
@@ -84,7 +89,9 @@ def plot_training_metrics(train_hist,model,test_gen,test_label,y_actual,y_pred,c
 
 def plot_confusion_matrix(model,test_gen,test_label,y_actual,y_pred,classes,save_path):
     ''' Plot only the confusion matrix: this is for evaluation on validation
-    or test set.
+    or test set. Write to save_path.
+
+    Notice: this function does not need history as an input.
     '''
     test_loss, test_metric, *anythingelse = model.evaluate(test_gen,test_label,verbose = False)
     results       = round(test_metric,2)*100

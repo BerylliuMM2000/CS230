@@ -6,6 +6,12 @@ import tensorflow as tf
 import sys
 from keras.optimizers import SGD, Adam
 
+""" This file is used when one already has the model fitted and saved to .h5 file. It generates
+    ONLY a confusion matrix plot. There're three user provided arguments: existing .h5 file path,
+    path to save the plots, and an optional third argument. If the optional third argument is given,
+    then perform the evulation on test set. Otherwise (by default), perform on validation set.
+"""
+
 IMAGE_SIZE = [176,208]
 BATCH_SIZE = 32
 CLASS_LIST  = ['MildDemented','ModerateDemented','NonDemented','VeryMildDemented']
@@ -16,8 +22,6 @@ if len(sys.argv) < 3:
     print("   $python3 evaluate_and_plot.py  <model.h5> <image_path.png> [Bool:perform on test]")
 model_path = sys.argv[1]
 save_path = sys.argv[2]
-# If the optional third argument is given, then perform the evulation on test set
-# Otherwise (by default), perform on validation set.
 on_test = False
 if len(sys.argv) > 3:
     on_test = True
