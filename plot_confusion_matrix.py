@@ -96,6 +96,8 @@ def plot_confusion_matrix(model,test_gen,test_label,y_actual,y_pred,classes,save
     test_loss, test_metric, *anythingelse = model.evaluate(test_gen,test_label,verbose = False)
     results       = round(test_metric,2)*100
     f1 = round(f1_score(y_actual, y_pred, average="weighted"),2)*100
+    # print classification report
+    print(classification_report(y_actual, y_pred, target_names=classes))
     # calculate Confusion Matrix
     cm = confusion_matrix(y_actual, y_pred)
     # create confusion matrix plot
