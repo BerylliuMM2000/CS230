@@ -93,3 +93,14 @@ test_data = np.array(test_data)
 test_labels = np.array(test_labels)
 
 train_data, val_data, train_labels, val_labels = train_test_split(train_data, train_labels, test_size=0.2,random_state=42)
+
+data_augmentation = keras.Sequential(
+    [
+        layers.experimental.preprocessing.Normalization(),
+        layers.experimental.preprocessing.RandomFlip("horizontal"),
+        layers.experimental.preprocessing.RandomRotation(0.02),
+    ]
+)
+
+# Setting the state of the normalization layer.
+data_augmentation.layers[0].adapt(train_data)
