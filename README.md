@@ -1,4 +1,4 @@
-# Deep Learning for Alzherimer MRI Classification
+# Deep Learning for Alzheimer's MRI Classification
 
 Github Repository for CS230 Fall 2022 Project - Deep Learning Methods for Alzheimer Disease Prediction
 
