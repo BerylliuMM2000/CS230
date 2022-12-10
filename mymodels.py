@@ -3,6 +3,10 @@ from tensorflow.keras import backend, models, layers, Sequential
 from tensorflow.keras.layers import Input, Concatenate, Dense, Dropout, Flatten, Add
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, AveragePooling2D
 from tensorflow.keras.layers import BatchNormalization
+from tensorflow.keras.models import Model
+from tensorflow.keras import backend, models, layers, Sequential
+from tensorflow.keras.callbacks import EarlyStopping,ReduceLROnPlateau
+from tensorflow.keras.applications import DenseNet121,InceptionV3, Xception, ResNet101
 from tensorflow.keras.callbacks import EarlyStopping,ReduceLROnPlateau
 import keras_tuner as kt
 from keras.optimizers import SGD, Adam
@@ -31,11 +35,11 @@ def tune_resnet50_adam(hp):
     Solver Adam is used for this model
 
     Tuning hyperparameters:                               Best value:
-    unit1: The size of the first FC layer
-    unit2: The size of the second FC layer
-    lr: learning rate of Adam() solver
-    beta1: the beta_1 parameter of Adam() solver
-    beta2: the beta_2 parameter of Adam() solver
+    unit1: The size of the first FC layer                 512
+    unit2: The size of the second FC layer                128
+    lr: learning rate of Adam() solver                    2.25e-4
+    beta1: the beta_1 parameter of Adam() solver          0.963
+    beta2: the beta_2 parameter of Adam() solver          0.9997
     """
     model = Sequential()
     model.add(tf.keras.applications.ResNet50(
@@ -102,6 +106,8 @@ def build_resnet50_sgd(unit1=1280, unit2=256, lr=2.7e-3, momentum=0.95):
     This model is a modification of the original Resnet-50 model structure.
     It inherits all the convolution layers, but the dense and softmax layers
     are rebuild. 2 FC layers are used.
+
+    SGD is used as optimizer.
     """
     model = Sequential()
     model.add(tf.keras.applications.ResNet50(
@@ -117,6 +123,60 @@ def build_resnet50_sgd(unit1=1280, unit2=256, lr=2.7e-3, momentum=0.95):
     model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=METRICS)
     return model
 
-# TODO: build_resnet50_adam after tuning
+def build_resnet50_adam(unit1=512, unit2=128, lr=2.25e-4, beta1=0.963, beta2=0.9997):
+    """ Build a modified ResNet-50 model using the best hyperparameters.
+
+    This model is a modification of the original Resnet-50 model structure.
+    It inherits all the convolution layers, but the dense and softmax layers
+    are rebuild. 2 FC layers are used.
+
+    Adam is used as the optimizer
+    """
+    model = Sequential()
+    model.add(tf.keras.applications.ResNet50(
+        input_shape=(*IMAGE_SIZE, 3), 
+        weights='imagenet', 
+        include_top=False))
+    model.add(AveragePooling2D())
+    model.add(Flatten())
+    model.add(Dense(unit1))
+    model.add(Dense(unit2))
+    model.add(Dense(4, activation='softmax'))
+    adam = Adam(learning_rate = lr, beta_1=beta1, beta_2=beta2)
+    model.compile(optimizer=adam, loss='categorical_crossentropy', metrics=METRICS)
+    return model
+
 
 # TODO: baseline model of inception and vgg16
+def build_vgg16():
+    ''' VGG-16 Baseline model, tune all parameters
+    '''
+    vgg16 = tf.keras.applications.VGG16(
+        input_shape=(*IMAGE_SIZE, 3), 
+        weights='imagenet', 
+        include_top=False)
+    # Train all parameters
+    x = tf.keras.layers.Flatten()(vgg16.output)
+    prediction = tf.keras.layers.Dense(4, activation='softmax')(x)
+    model = tf.keras.Model(inputs=vgg16.input, outputs=prediction)
+    model.compile(optimizer="adam", loss='categorical_crossentropy', metrics=METRICS)
+    return model
+
+def build_inception(dropout,dense_node):
+    """
+    Build and compile an inceptionV3 model with dense layer rebuilt
+    Input: dropout rate, the number of filters in the dense node, 
+    """
+    model = Sequential()
+    model.add(InceptionV3(weights = 'imagenet', include_top = False, input_shape = (*IMAGE_SIZE, 3)))
+    model.add(Dropout(dropout))
+    model.add(BatchNormalization())
+    model.add(Flatten())
+    model.add(Dense(dense_node,activation='relu'))
+    model.add(Dense(4,activation='softmax'))
+    # complile the model
+    model.compile(
+        optimizer = 'adam',
+        loss      = 'categorical_crossentropy', 
+        metrics   = METRICS)
+    return model
