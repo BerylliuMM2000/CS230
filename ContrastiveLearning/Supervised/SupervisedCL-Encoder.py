@@ -1,6 +1,7 @@
 from tensorflow import keras
 
-# The encoder learns vector representations of the MRI scans
+# The encoder learns vector representations of the MRI scans where representations of the scan in the same
+# class will be more similar compared to representations in different classes
 def create_encoder():
     resnet = keras.applications.ResNet50V2(
     #resnet = keras.applications.ResNet101V2(
