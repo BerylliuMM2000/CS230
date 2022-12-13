@@ -1,3 +1,7 @@
+# follow the SimCLR framwork, relies on dataset with large portion of unlabelled and small portion as labelled.
+#SimCLR learns representations by maximizing agreement between differently augmented views of the same MRI scan through a
+#contrastive loss in the latent space
+
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report, f1_score
 
