@@ -15,6 +15,7 @@ class SupervisedContrastiveLoss(keras.losses.Loss):
         logits = (feature_vectors_normalized@feature_vectors_normalized.T)/self.temperature
         return tfa.losses.npairs_loss(tf.squeeze(labels), logits)
 
+# The projection head
 def add_projection_head(encoder):
     features = encoder(keras.Input(shape=input_shape))
     outputs = layers.Dense(projection_units, activation="relu")(features)
