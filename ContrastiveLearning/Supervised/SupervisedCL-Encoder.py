@@ -10,6 +10,14 @@ def create_encoder():
     model = keras.Model(inputs=keras.Input(shape=input_shape), outputs=resnet(data_augmentation(inputs)))
     return model
 
+#lr_decayed_fn = tf.keras.optimizers.schedules.CosineDecay(
+#    initial_learning_rate=learning_rate, decay_steps=10)
+lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay( # added on 12/5 afternoon
+    initial_learning_rate = 0.01,
+    decay_steps = 1000,
+    decay_rate = 0.95
+)
+
 # Add fully-conencted layers on the encoder
 def create_classifier(encoder, trainable=True):
 
@@ -30,6 +38,8 @@ def create_classifier(encoder, trainable=True):
     model.compile(
         #optimizer = keras.optimizers.Adam(learning_rate), # the original code
         optimizer = keras.optimizers.SGD(learning_rate),#, decay=1e-6,momentum=0.5)
+        #optimizer = keras.optimizers.SGD(learning_rate=lr_schedule),
+        # optimizer = keras.experimental.CosineDecay(learning_rate, decay_steps=10),
         loss=keras.losses.SparseCategoricalCrossentropy(),
         metrics=[keras.metrics.SparseCategoricalAccuracy()]#, keras.metrics.AUC(name='auc')]
     )
