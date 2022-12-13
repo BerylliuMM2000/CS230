@@ -1,5 +1,6 @@
 from tensorflow import keras
 
+# The encoder learns vector representations of the MRI scans
 def create_encoder():
     resnet = keras.applications.ResNet50V2(
     #resnet = keras.applications.ResNet101V2(
@@ -9,6 +10,7 @@ def create_encoder():
     model = keras.Model(inputs=keras.Input(shape=input_shape), outputs=resnet(data_augmentation(inputs)))
     return model
 
+# Add fully-conencted layers on the encoder
 def create_classifier(encoder, trainable=True):
 
     for layer in encoder.layers:
