@@ -3,7 +3,7 @@
 Github Repository for CS230 Fall 2022 Project - Deep Learning Methods for Alzheimer Disease Prediction
 
 ## Datasets
-- Datasets extracted from Kaggle, specified in `Alzheimer_s Dataset` folder
+- Specified in `Alzheimer_s Dataset` folder. Contains MRI/CT scans of different levels of Alzheimer's Disease.
 
 ## Main Files:
 - `data_generator.py`: process images from input directory into appropriate format for CNNs. (Deprecated and replaced by `augmented.py`)
